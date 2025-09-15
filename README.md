@@ -1,5 +1,7 @@
 # Bootsik.TestTask
 
+PuppeteerSharp requires to download browser at first generate pdf call
+
 ## 1. Run via Bootsik.TestTask
 
 `docker compose up -d`
