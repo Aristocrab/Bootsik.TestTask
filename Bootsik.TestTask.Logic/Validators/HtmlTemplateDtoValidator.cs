@@ -1,7 +1,7 @@
-using Bootsik.TestTask.WebApi.Dtos;
+using Bootsik.TestTask.Logic.Dtos;
 using FluentValidation;
 
-namespace Bootsik.TestTask.WebApi.Validators;
+namespace Bootsik.TestTask.Logic.Validators;
 
 public class HtmlTemplateDtoValidator : AbstractValidator<HtmlTemplateDto>
 {

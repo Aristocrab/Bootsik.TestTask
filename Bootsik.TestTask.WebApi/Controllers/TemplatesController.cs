@@ -1,6 +1,6 @@
-using Bootsik.TestTask.WebApi.Dtos;
-using Bootsik.TestTask.WebApi.Entities;
-using Bootsik.TestTask.WebApi.Services;
+using Bootsik.TestTask.Logic.Dtos;
+using Bootsik.TestTask.Logic.Entities;
+using Bootsik.TestTask.Logic.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bootsik.TestTask.WebApi.Controllers;

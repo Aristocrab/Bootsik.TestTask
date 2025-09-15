@@ -1,4 +1,4 @@
-namespace Bootsik.TestTask.WebApi.Exceptions;
+namespace Bootsik.TestTask.Logic.Exceptions;
 
 public class NotFoundException : Exception
 {

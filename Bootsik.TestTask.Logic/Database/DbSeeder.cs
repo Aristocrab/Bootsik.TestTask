@@ -1,7 +1,8 @@
-using Bootsik.TestTask.WebApi.Entities;
+using Bootsik.TestTask.Logic.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace Bootsik.TestTask.WebApi.Database;
+namespace Bootsik.TestTask.Logic.Database;
 
 public class DbSeeder
 {

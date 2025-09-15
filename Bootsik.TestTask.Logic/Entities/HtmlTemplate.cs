@@ -1,4 +1,4 @@
-namespace Bootsik.TestTask.WebApi.Entities;
+namespace Bootsik.TestTask.Logic.Entities;
 
 public class HtmlTemplate : BaseEntity
 {

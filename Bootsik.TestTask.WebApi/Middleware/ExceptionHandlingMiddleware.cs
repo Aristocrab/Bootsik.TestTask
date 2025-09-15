@@ -1,5 +1,5 @@
 using System.Net;
-using Bootsik.TestTask.WebApi.Exceptions;
+using Bootsik.TestTask.Logic.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 

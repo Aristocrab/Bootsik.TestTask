@@ -1,7 +1,7 @@
-using Bootsik.TestTask.WebApi.Dtos;
-using Bootsik.TestTask.WebApi.Entities;
+using Bootsik.TestTask.Logic.Dtos;
+using Bootsik.TestTask.Logic.Entities;
 
-namespace Bootsik.TestTask.WebApi.Services;
+namespace Bootsik.TestTask.Logic.Services;
 
 public interface ITemplatesService
 {

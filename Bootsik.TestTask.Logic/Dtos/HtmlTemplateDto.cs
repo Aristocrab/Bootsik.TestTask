@@ -1,4 +1,4 @@
-namespace Bootsik.TestTask.WebApi.Dtos;
+namespace Bootsik.TestTask.Logic.Dtos;
 
 public class HtmlTemplateDto
 {

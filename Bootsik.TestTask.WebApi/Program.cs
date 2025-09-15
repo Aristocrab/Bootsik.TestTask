@@ -1,9 +1,11 @@
+using Bootsik.TestTask.Logic;
+using Bootsik.TestTask.Logic.Database;
 using Bootsik.TestTask.WebApi;
-using Bootsik.TestTask.WebApi.Database;
 using Bootsik.TestTask.WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddLogicServices();
 builder.AddApiServices();
 
 var app = builder.Build();

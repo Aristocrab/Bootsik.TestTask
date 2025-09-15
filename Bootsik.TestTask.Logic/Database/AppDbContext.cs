@@ -1,7 +1,7 @@
-using Bootsik.TestTask.WebApi.Entities;
+using Bootsik.TestTask.Logic.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bootsik.TestTask.WebApi.Database;
+namespace Bootsik.TestTask.Logic.Database;
 
 public class AppDbContext : DbContext
 {

@@ -1,13 +1,14 @@
 using System.Text.RegularExpressions;
-using Bootsik.TestTask.WebApi.Database;
-using Bootsik.TestTask.WebApi.Dtos;
-using Bootsik.TestTask.WebApi.Entities;
-using Bootsik.TestTask.WebApi.Exceptions;
+using Bootsik.TestTask.Logic.Database;
+using Bootsik.TestTask.Logic.Dtos;
+using Bootsik.TestTask.Logic.Entities;
+using Bootsik.TestTask.Logic.Exceptions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
 
-namespace Bootsik.TestTask.WebApi.Services;
+namespace Bootsik.TestTask.Logic.Services;
 
 public class TemplatesService : ITemplatesService
 {
