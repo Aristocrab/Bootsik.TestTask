@@ -8,9 +8,10 @@
 
     <ItemGroup>
       <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+      <PackageReference Include="itext.bouncy-castle-adapter" Version="9.3.0" />
+      <PackageReference Include="itext.pdfhtml" Version="6.2.1" />
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.9" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
-      <PackageReference Include="PuppeteerSharp" Version="20.2.2" />
     </ItemGroup>
 
 </Project>

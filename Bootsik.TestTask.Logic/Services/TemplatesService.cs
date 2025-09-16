@@ -1,30 +1,29 @@
 using System.Text.RegularExpressions;
-using Bootsik.TestTask.Logic.Browser;
 using Bootsik.TestTask.Logic.Database;
 using Bootsik.TestTask.Logic.Dtos;
 using Bootsik.TestTask.Logic.Entities;
 using Bootsik.TestTask.Logic.Exceptions;
+using Bootsik.TestTask.Logic.PdfConverter;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using PuppeteerSharp;
 
 namespace Bootsik.TestTask.Logic.Services;
 
 public class TemplatesService : ITemplatesService
 {
     private readonly AppDbContext _dbContext;
-    private readonly IBrowserProvider _browserProvider;
+    private readonly IPdfConverter _pdfConverter;
     private readonly ILogger<TemplatesService> _logger;
     private readonly IValidator<HtmlTemplateDto> _templateDtoValidator;
 
     public TemplatesService(AppDbContext dbContext, 
-        IBrowserProvider browserProvider,
+        IPdfConverter pdfConverter,
         ILogger<TemplatesService> logger, 
         IValidator<HtmlTemplateDto> templateDtoValidator)
     {
         _dbContext = dbContext;
-        _browserProvider = browserProvider;
+        _pdfConverter = pdfConverter;
         _logger = logger;
         _templateDtoValidator = templateDtoValidator;
     }
@@ -95,18 +94,11 @@ public class TemplatesService : ITemplatesService
             _logger.LogWarning("Some placeholders in template {TemplateName} were not filled: {@Placeholders}", 
                 template.Name, unmatchedPlaceholders);
         }
-
-        await _browserProvider.EnsureBrowserDownloadedAsync();
         
         // generate pdf
         _logger.LogInformation("Generating PDF for template {TemplateName}", template.Name);
         
-        var browser = await _browserProvider.LaunchBrowserAsync();
-        await using var page = await browser.NewPageAsync();
-        await page.SetContentAsync(htmlContent);
-        var bytes = await page.PdfDataAsync();
-        
-        await browser.CloseAsync();
+        var bytes = _pdfConverter.GeneratePdf(htmlContent);
         
         _logger.LogInformation("PDF for template {TemplateName} has been generated", template.Name);
         
@@ -117,7 +109,10 @@ public class TemplatesService : ITemplatesService
     {
         var template = await _dbContext.HtmlTemplates.FirstOrDefaultAsync(x => x.Id == templateId);
         if (template is null)
+        {
             throw new NotFoundException("Template not found");
+        }
+        
         return template;
     }
     
