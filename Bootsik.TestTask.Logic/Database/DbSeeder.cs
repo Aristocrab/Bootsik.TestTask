@@ -19,7 +19,7 @@ public class DbSeeder
     {
         await _dbContext.Database.MigrateAsync();
         
-        if (!_dbContext.HtmlTemplates.Any())
+        if (!await _dbContext.HtmlTemplates.AnyAsync())
         {
             var templates = new List<HtmlTemplate>
             {

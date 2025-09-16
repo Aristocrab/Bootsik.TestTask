@@ -85,7 +85,7 @@ public class TemplatesService : ITemplatesService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<byte[]> GeneratePdfAsync(Guid templateId, PdfRequest request)
+    public async Task<byte[]> GeneratePdfAsync(Guid templateId, PdfRequest jsonData)
     {
         var template = await _dbContext.HtmlTemplates
             .FirstOrDefaultAsync(x => x.Id == templateId);
@@ -98,7 +98,7 @@ public class TemplatesService : ITemplatesService
         // replace placeholders
         var htmlContent = template.Content;
 
-        foreach (var parameter in request.Data)
+        foreach (var parameter in jsonData.Data)
         {
             var pattern = @"\{\{\s*" + Regex.Escape(parameter.Key) + @"\s*\}\}";
             htmlContent = Regex.Replace(htmlContent, pattern, parameter.Value.ToString() ?? "");
@@ -114,7 +114,6 @@ public class TemplatesService : ITemplatesService
             _logger.LogWarning("Some placeholders in template {TemplateName} were not filled: {@Placeholders}", 
                 template.Name, unmatchedPlaceholders);
         }
-
         
         // download browser if not exists
         _logger.LogInformation("Downloading browser...");

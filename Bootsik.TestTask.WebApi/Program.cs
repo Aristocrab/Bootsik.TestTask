@@ -10,6 +10,7 @@ builder.AddApiServices();
 
 var app = builder.Build();
 
+// Seed db
 using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<DbSeeder>();
 await dbContext.SeedAsync();
