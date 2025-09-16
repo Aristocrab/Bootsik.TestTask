@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Bootsik.TestTask.Logic.Browser;
 using Bootsik.TestTask.Logic.Database;
 using Bootsik.TestTask.Logic.Dtos;
 using Bootsik.TestTask.Logic.Entities;
@@ -13,14 +14,17 @@ namespace Bootsik.TestTask.Logic.Services;
 public class TemplatesService : ITemplatesService
 {
     private readonly AppDbContext _dbContext;
+    private readonly IBrowserProvider _browserProvider;
     private readonly ILogger<TemplatesService> _logger;
     private readonly IValidator<HtmlTemplateDto> _templateDtoValidator;
 
     public TemplatesService(AppDbContext dbContext, 
+        IBrowserProvider browserProvider,
         ILogger<TemplatesService> logger, 
         IValidator<HtmlTemplateDto> templateDtoValidator)
     {
         _dbContext = dbContext;
+        _browserProvider = browserProvider;
         _logger = logger;
         _templateDtoValidator = templateDtoValidator;
     }
@@ -52,12 +56,7 @@ public class TemplatesService : ITemplatesService
     {
         await _templateDtoValidator.ValidateAndThrowAsync(template);
 
-        var existingTemplate = await _dbContext.HtmlTemplates.FirstOrDefaultAsync(x => x.Id == templateId);
-
-        if (existingTemplate is null)
-        {
-            throw new NotFoundException("Template not found");
-        }
+        var existingTemplate = await GetTemplateOrThrowAsync(templateId);
 
         existingTemplate.Name = template.Name;
         existingTemplate.Content = template.Content;
@@ -71,12 +70,7 @@ public class TemplatesService : ITemplatesService
 
     public async Task DeleteAsync(Guid templateId)
     {
-        var existingTemplate = await _dbContext.HtmlTemplates.FirstOrDefaultAsync(x => x.Id == templateId);
-
-        if (existingTemplate is null)
-        {
-            throw new NotFoundException("Template not found");
-        }
+        var existingTemplate = await GetTemplateOrThrowAsync(templateId);
 
         _dbContext.HtmlTemplates.Remove(existingTemplate);
         
@@ -87,22 +81,9 @@ public class TemplatesService : ITemplatesService
 
     public async Task<byte[]> GeneratePdfAsync(Guid templateId, PdfRequest jsonData)
     {
-        var template = await _dbContext.HtmlTemplates
-            .FirstOrDefaultAsync(x => x.Id == templateId);
+        var template = await GetTemplateOrThrowAsync(templateId);
 
-        if (template is null)
-        {
-            throw new NotFoundException("Template not found");
-        }
-
-        // replace placeholders
-        var htmlContent = template.Content;
-
-        foreach (var parameter in jsonData.Data)
-        {
-            var pattern = @"\{\{\s*" + Regex.Escape(parameter.Key) + @"\s*\}\}";
-            htmlContent = Regex.Replace(htmlContent, pattern, parameter.Value.ToString() ?? "");
-        }
+        var htmlContent = ReplacePlaceholders(template.Content, jsonData.Data);
         
         // if some placeholders are not replaced write warning log
         var unmatchedPlaceholders = Regex.Matches(htmlContent, @"\{\{\s*(\w+)\s*\}\}")
@@ -114,20 +95,13 @@ public class TemplatesService : ITemplatesService
             _logger.LogWarning("Some placeholders in template {TemplateName} were not filled: {@Placeholders}", 
                 template.Name, unmatchedPlaceholders);
         }
-        
-        // download browser if not exists
-        _logger.LogInformation("Downloading browser...");
-        var browserFetcher = new BrowserFetcher();
-        await browserFetcher.DownloadAsync();
-        _logger.LogInformation("Browser has been downloaded");
+
+        await _browserProvider.EnsureBrowserDownloadedAsync();
         
         // generate pdf
         _logger.LogInformation("Generating PDF for template {TemplateName}", template.Name);
         
-        var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-        {
-            Headless = true
-        });
+        var browser = await _browserProvider.LaunchBrowserAsync();
         await using var page = await browser.NewPageAsync();
         await page.SetContentAsync(htmlContent);
         var bytes = await page.PdfDataAsync();
@@ -137,5 +111,25 @@ public class TemplatesService : ITemplatesService
         _logger.LogInformation("PDF for template {TemplateName} has been generated", template.Name);
         
         return bytes;
+    }
+    
+    private async Task<HtmlTemplate> GetTemplateOrThrowAsync(Guid templateId)
+    {
+        var template = await _dbContext.HtmlTemplates.FirstOrDefaultAsync(x => x.Id == templateId);
+        if (template is null)
+            throw new NotFoundException("Template not found");
+        return template;
+    }
+    
+    private static string ReplacePlaceholders(string content, IDictionary<string, object> data)
+    {
+        // Replaces placeholders in the format {{key}} with values from the dictionary
+        foreach (var parameter in data)
+        {
+            var pattern = @"\{\{\s*" + Regex.Escape(parameter.Key) + @"\s*\}\}";
+            content = Regex.Replace(content, pattern, parameter.Value.ToString() ?? "");
+        }
+        
+        return content;
     }
 }

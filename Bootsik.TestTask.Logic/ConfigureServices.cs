@@ -1,3 +1,4 @@
+using Bootsik.TestTask.Logic.Browser;
 using Bootsik.TestTask.Logic.Database;
 using Bootsik.TestTask.Logic.Services;
 using Bootsik.TestTask.Logic.Validators;
@@ -24,5 +25,6 @@ public static class ConfigureServices
         
         // Services
         builder.Services.AddScoped<ITemplatesService, TemplatesService>();
+        builder.Services.AddScoped<IBrowserProvider, BrowserProvider>();
     }
 }
