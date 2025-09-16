@@ -17,6 +17,8 @@ public class PdfConverter : IPdfConverter
         using var pdfStream = new MemoryStream();
 
         HtmlConverter.ConvertToPdf(htmlContent, pdfStream);
+        
+        _logger.LogInformation("PDF generated successfully, size: {Size} bytes", pdfStream.Length);
 
         return pdfStream.ToArray();
     }
